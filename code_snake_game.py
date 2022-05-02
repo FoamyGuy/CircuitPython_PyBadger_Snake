@@ -8,6 +8,8 @@ from snake_helpers import World, Snake, GameOverException
 GAME_TIME_STEP = 0.5
 PAUSED = False
 GAME_OVER = False
+LAST_BUTTON_TIME = 0.0
+BUTTON_COOLDOWN = 0.1
 
 display = board.DISPLAY
 world = World(height=16, width=20)
@@ -28,17 +30,31 @@ while True:
     #print(pybadger.button)
     cur_btn_vals = pybadger.button  # update button sate
     # if up button was pressed
-    if not prev_btn_vals.up and cur_btn_vals.up:
-        snake.direction = snake.DIRECTION_UP
-    # if down button was pressed
-    if not prev_btn_vals.down and cur_btn_vals.down:
-        snake.direction = snake.DIRECTION_DOWN
-    # if right button was pressed
-    if not prev_btn_vals.right and cur_btn_vals.right:
-        snake.direction = snake.DIRECTION_RIGHT
-    # if left button was pressed
-    if not prev_btn_vals.left and cur_btn_vals.left:
-        snake.direction = snake.DIRECTION_LEFT
+    #print(now)
+    if LAST_BUTTON_TIME + BUTTON_COOLDOWN <= now:
+        if not prev_btn_vals.up and cur_btn_vals.up:
+            if snake.direction != snake.DIRECTION_DOWN and snake.direction != snake.DIRECTION_UP:
+                LAST_BUTTON_TIME = now
+                snake.direction = snake.DIRECTION_UP
+        # if down button was pressed
+        if not prev_btn_vals.down and cur_btn_vals.down:
+            if snake.direction != snake.DIRECTION_UP and snake.direction != snake.DIRECTION_DOWN:
+                LAST_BUTTON_TIME = now
+                snake.direction = snake.DIRECTION_DOWN
+        # if right button was pressed
+        if not prev_btn_vals.right and cur_btn_vals.right:
+            if snake.direction != snake.DIRECTION_LEFT and snake.direction != snake.DIRECTION_RIGHT:
+                LAST_BUTTON_TIME = now
+                snake.direction = snake.DIRECTION_RIGHT
+        # if left button was pressed
+        if not prev_btn_vals.left and cur_btn_vals.left:
+            if snake.direction != snake.DIRECTION_RIGHT and snake.direction != snake.DIRECTION_LEFT:
+                LAST_BUTTON_TIME = now
+                snake.direction = snake.DIRECTION_LEFT
+    else:
+        # update the previous values
+        prev_btn_vals = cur_btn_vals
+        continue
 
     if not prev_btn_vals.start and cur_btn_vals.start:
         PAUSED = not PAUSED
