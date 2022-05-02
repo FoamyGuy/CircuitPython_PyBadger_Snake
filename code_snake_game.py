@@ -1,5 +1,6 @@
 import board
 import displayio
+import supervisor
 import time
 from adafruit_pybadger import pybadger
 from snake_helpers import World, Snake, GameOverException
@@ -41,8 +42,7 @@ while True:
 
     if not prev_btn_vals.start and cur_btn_vals.start:
         PAUSED = not PAUSED
-    # update the previous values
-    prev_btn_vals = cur_btn_vals
+
 
     #print(f"{now} - {prev_step_time}")
     if not GAME_OVER:
@@ -55,7 +55,14 @@ while True:
                     print("\n\n\n\n\n")
                     print("Game Over")
                     print(f"Score: {snake.size}\n")
-                    print("Press Reset\nto Play Again")
+                    print("Press Start\nfor code.py")
                     GAME_OVER = True
+
                 prev_step_time = now
 
+    else:
+        if not prev_btn_vals.start and cur_btn_vals.start:
+            supervisor.reload()
+
+    # update the previous values
+    prev_btn_vals = cur_btn_vals
