@@ -14,6 +14,8 @@ BUTTON_COOLDOWN = 0.1
 display = board.DISPLAY
 world = World(height=16, width=20)
 snake = Snake(starting_location=[10, 10])
+snake.grow()
+snake.grow()
 
 world.add_apple(snake=snake)
 main_group = displayio.Group()
@@ -66,11 +68,14 @@ while True:
             if now >= prev_step_time + GAME_TIME_STEP:
                 try:
                     world.move_snake(snake)
+                    GAME_TIME_STEP = max(.1, .6 - (.1 * (len(snake)//3)))
+                    #print(f"speed = {GAME_TIME_STEP}")
+
                 except GameOverException:
                     display.show(None)
                     print("\n\n\n\n\n")
                     print("Game Over")
-                    print(f"Score: {snake.size}\n")
+                    print(f"Score: {len(snake)}\n")
                     print("Press Start\nfor code.py")
                     GAME_OVER = True
 

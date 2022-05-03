@@ -33,6 +33,9 @@ class Snake:
     def size(self):
         return len(self.locations)
 
+    def __len__(self):
+        return len(self.locations)
+
     @property
     def head(self):
         return self.locations[0]
