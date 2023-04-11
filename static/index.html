@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Badge</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.css"/>
+  <script src="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.js"></script>
+</head>
+<body>
+<!--<input id="neopixel-color" type="color">-->
+
+<input id="neopixel-color" type="text" data-coloris>
+<button id="set-color-btn">Set Color</button>
+<a href="/led_off">Off</a>
+<script>
+    function hexToRgb(hex) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
+
+    /*var colorInput = document.getElementById("neopixel-color");
+
+    colorInput.addEventListener("input", function () {
+        let colorVal = hexToRgb(colorInput.value);
+        console.log(`${colorVal.r},${colorVal.g},${colorVal.b}`);
+        console.log(`/led_on/${colorVal.r}/${colorVal.g}/${colorVal.b}`);
+        window.location = `/led_on/${colorVal.r}/${colorVal.g}/${colorVal.b}`;
+
+        // Do something with `theColor` here.
+    }, false);*/
+
+    document.querySelector("#set-color-btn").addEventListener("click", function () {
+
+        let hexColor = document.querySelector("#neopixel-color").value;
+        console.log('New color', hexColor);
+        let colorVal = hexToRgb(hexColor);
+        console.log(`/led_on/${colorVal.r}/${colorVal.g}/${colorVal.b}`);
+        window.location = `/led_on/${colorVal.r}/${colorVal.g}/${colorVal.b}`;
+    });
+    document.addEventListener('coloris:pick', event => {
+
+    });
+</script>
+</body>
+</html>
