@@ -16,7 +16,6 @@ import supervisor
 from adafruit_pybadger import pybadger
 from displayio_listselect import ListSelect
 import busio
-import os
 from digitalio import DigitalInOut
 from adafruit_esp32spi import adafruit_esp32spi
 from adafruit_esp32spi import adafruit_esp32spi_wifimanager
@@ -28,8 +27,6 @@ try:
     import json as json_module
 except ImportError:
     import ujson as json_module
-
-from simple_wsgi_application import SimpleWSGIApplication
 
 try:
     from secrets import secrets
