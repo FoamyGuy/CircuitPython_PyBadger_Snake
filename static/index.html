@@ -5,45 +5,23 @@
   <title>Badge</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.css"/>
   <script src="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="http://cdn.jsdelivr.net/gh/FoamyGuy/CircuitPython_PyBadger_Snake/static/style_v1.0.1.css"/>
+  <style>
+
+  </style>
 </head>
 <body>
-<!--<input id="neopixel-color" type="color">-->
-
-<input id="neopixel-color" type="text" data-coloris>
-<button id="set-color-btn">Set Color</button>
-<a href="/led_off">Off</a>
-<script>
-    function hexToRgb(hex) {
-        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16)
-        } : null;
-    }
-
-    /*var colorInput = document.getElementById("neopixel-color");
-
-    colorInput.addEventListener("input", function () {
-        let colorVal = hexToRgb(colorInput.value);
-        console.log(`${colorVal.r},${colorVal.g},${colorVal.b}`);
-        console.log(`/led_on/${colorVal.r}/${colorVal.g}/${colorVal.b}`);
-        window.location = `/led_on/${colorVal.r}/${colorVal.g}/${colorVal.b}`;
-
-        // Do something with `theColor` here.
-    }, false);*/
-
-    document.querySelector("#set-color-btn").addEventListener("click", function () {
-
-        let hexColor = document.querySelector("#neopixel-color").value;
-        console.log('New color', hexColor);
-        let colorVal = hexToRgb(hexColor);
-        console.log(`/led_on/${colorVal.r}/${colorVal.g}/${colorVal.b}`);
-        window.location = `/led_on/${colorVal.r}/${colorVal.g}/${colorVal.b}`;
-    });
-    document.addEventListener('coloris:pick', event => {
-
-    });
-</script>
+<div class="flex-container">
+    <div class="row">
+      <div class="flex-item"><span class="title">Badge Controller</span></div>
+      <div class="flex-item"><span>Placeholder Text Here.</span></div>
+      <div class="flex-item"><span><a href="https://circuitpython.org/">Link Placeholder</a></span></div>
+      <div class="flex-item"><input id="neopixel-color" type="text" data-coloris></div>
+      <div class="flex-item"><button id="set-color-btn">Set Color</button></div>
+      <div class="flex-item"><a href="/led_off"><button>Off</button></a></div>
+    </div>
+</div>
+<script src="http://cdn.jsdelivr.net/gh/FoamyGuy/CircuitPython_PyBadger_Snake/static/script.js"></script>
 </body>
 </html>

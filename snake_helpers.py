@@ -5,7 +5,6 @@ from displayio import TileGrid
 X = 0
 Y = 1
 
-
 class Snake:
     DIRECTION_UP = 0
     DIRECTION_DOWN = 1
@@ -14,7 +13,8 @@ class Snake:
 
     def __init__(self, starting_location=[10, 10]):
         self.locations = [starting_location]
-        self.direction = self.DIRECTION_UP
+
+        self.direction = random.randint(0,3)
 
     def grow(self):
         if self.direction == self.DIRECTION_UP:
@@ -71,25 +71,25 @@ class World(TileGrid):
             if snake.head[Y] > 0:
                 next_loc[Y] -= 1
             else:
-                return
+                raise GameOverException("Game Over")
 
         if snake.direction == snake.DIRECTION_DOWN:
             if snake.head[Y] < self.height - 1:
                 next_loc[Y] += 1
             else:
-                return
+                raise GameOverException("Game Over")
 
         if snake.direction == snake.DIRECTION_LEFT:
             if snake.head[X] > 0:
                 next_loc[X] -= 1
             else:
-                return
+                raise GameOverException("Game Over")
 
         if snake.direction == snake.DIRECTION_RIGHT:
             if snake.head[X] < self.width - 1:
                 next_loc[X] += 1
             else:
-                return
+                raise GameOverException("Game Over")
 
         if self[tuple(next_loc)] == self.APPLE_SPRITE_INDEX:
             #print("hitting apple")

@@ -12,21 +12,27 @@ To add new scripts:
 """
 import time
 import board
+from displayio import Group
 import supervisor
+import terminalio
 from adafruit_pybadger import pybadger
 from displayio_listselect import ListSelect
 import busio
+import os
 from digitalio import DigitalInOut
 from adafruit_esp32spi import adafruit_esp32spi
 from adafruit_esp32spi import adafruit_esp32spi_wifimanager
 import adafruit_esp32spi.adafruit_esp32spi_wsgiserver as server
 import gc
 from adafruit_wsgi.wsgi_app import WSGIApp
+from adafruit_display_text.bitmap_label import Label
 
 try:
     import json as json_module
 except ImportError:
     import ujson as json_module
+
+from simple_wsgi_application import SimpleWSGIApplication
 
 try:
     from secrets import secrets
@@ -88,12 +94,12 @@ def index(request):
 
     return ("200 OK", [], index_str)
 
+
 @web_app.route("/led_on/<r>/<g>/<b>")
 def led_on(request, r, g, b):  # pylint: disable=unused-argument
     print("led on!")
     pybadger.pixels.fill((int(r), int(g), int(b)))
     return ("200 OK", [], index_str)
-
 
 @web_app.route("/led_off")
 def led_off(request):  # pylint: disable=unused-argument
@@ -112,6 +118,16 @@ print("open this IP in your browser: ", esp.pretty_ip(esp.ip_address))
 # Start the server
 wsgiServer.start()
 
+pybadger.pixels[0] = (0, 50, 0)
+
+rc_details_lbl = Label(terminalio.FONT, text=f"Open Browser To:\nhttp://{esp.pretty_ip(esp.ip_address)}",
+                       line_spacing=1.0, color=0xffffff)
+rc_details_lbl.anchor_point = (0.5, 1.0)
+rc_details_lbl.anchored_position = (pybadger.display.width // 2, pybadger.display.height)
+
+qr_screen_group = Group()
+qr_screen_group.append(rc_details_lbl)
+
 while True:
 
     pybadger.auto_dim_display(
@@ -126,8 +142,23 @@ while True:
             email_string_two="adafruit.com",
         )
     elif pybadger.button.b:
+        not_empty = True
+        while not_empty:
+            try:
+                _ = qr_screen_group.pop()
+            except IndexError:
+                not_empty = False
+
         pybadger.show_qr_code(data=f"http://{esp.pretty_ip(esp.ip_address)}")
-        #pybadger.show_qr_code(data="https://circuitpython.org")
+        pybadger.display.root_group[0].y = 0
+
+        scaled_qr_group = pybadger.display.root_group
+
+        pybadger.display.root_group = qr_screen_group
+        qr_screen_group.append(scaled_qr_group)
+        qr_screen_group.append(rc_details_lbl)
+
+
     elif pybadger.button.start:
         pybadger.show_badge(
             name_string="Blinka", hello_scale=2, my_name_is_scale=2, name_scale=3
