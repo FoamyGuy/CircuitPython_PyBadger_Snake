@@ -12,6 +12,7 @@ To add new scripts:
 """
 import time
 import board
+import displayio
 from displayio import Group
 import supervisor
 import terminalio
@@ -118,7 +119,11 @@ print("open this IP in your browser: ", esp.pretty_ip(esp.ip_address))
 # Start the server
 wsgiServer.start()
 
-pybadger.pixels[0] = (0, 50, 0)
+wifi_icon_bmp = displayio.OnDiskBitmap("wifi_14px.bmp")
+wifi_icon_tg = displayio.TileGrid(bitmap=wifi_icon_bmp, pixel_shader=wifi_icon_bmp.pixel_shader)
+wifi_icon_bmp.pixel_shader.make_transparent(0)
+
+display.root_group.append(wifi_icon_tg)
 
 rc_details_lbl = Label(terminalio.FONT, text=f"Open Browser To:\nhttp://{esp.pretty_ip(esp.ip_address)}",
                        line_spacing=1.0, color=0xffffff)
@@ -134,6 +139,10 @@ while True:
         delay=10
     )  # Remove or comment out this line if you have the PyBadge LC
     if pybadger.button.a:
+        try:
+            display.root_group.remove(wifi_icon_tg)
+        except ValueError:
+            pass
         pybadger.show_business_card(
             image_name="Blinka.bmp",
             name_string="Blinka",
@@ -142,6 +151,10 @@ while True:
             email_string_two="adafruit.com",
         )
     elif pybadger.button.b:
+        try:
+            display.root_group.remove(wifi_icon_tg)
+        except ValueError:
+            pass
         not_empty = True
         while not_empty:
             try:
@@ -160,9 +173,14 @@ while True:
 
 
     elif pybadger.button.start:
+        try:
+            display.root_group.remove(wifi_icon_tg)
+        except ValueError:
+            pass
         pybadger.show_badge(
             name_string="Blinka", hello_scale=2, my_name_is_scale=2, name_scale=3
         )
+        display.root_group.append(wifi_icon_tg)
     elif pybadger.button.select:
         if SELECT_RELEASED:
             if not MENU_SHOWING:
