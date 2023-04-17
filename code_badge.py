@@ -45,10 +45,14 @@ display = board.DISPLAY
 
 MENU_APPS = {"Snake": "code_snake_game.py", "IR Cam": "code_ir_cam.py"}
 MENU_ITEMS = ["Snake", "IR Cam", "Back"]
-# MENU_ITEMS = list(MENU_APPS.keys()) + ["Back"]
+
+MENU_NEOPIXEL_COLORS = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff]
+
 MENU_IDLE_TIMEOUT = 10  # secconds
 MENU_SHOWING = False
 MENU_START_TIME = None
+
+CUR_MENU_COLOR_INDEX = 0
 
 LAST_IO_SYNC_TIME = -1
 IO_SYNC_DELAY = 0.5
@@ -56,6 +60,8 @@ IO_SYNC_DELAY = 0.5
 SELECT_RELEASED = True
 
 previous_group = None
+
+pybadger.pixels.brightness = 0.1
 
 list_select = ListSelect(scale=2, items=MENU_ITEMS, background_color=None, color=0xDD00DD)
 list_select.anchor_point = (0.0, 0.5)
@@ -206,19 +212,30 @@ while True:
                     supervisor.reload()
 
                 elif list_select.selected_item == "Back":
+                    pybadger.pixels.fill(0)
                     pybadger.show(previous_group)
                 else:  # Unknown item, just go back
+                    pybadger.pixels.fill(0)
                     pybadger.show(previous_group)
 
         SELECT_RELEASED = False
 
     elif pybadger.button.up:
         if MENU_SHOWING:
+            pybadger.pixels.fill(MENU_NEOPIXEL_COLORS[CUR_MENU_COLOR_INDEX])
+            CUR_MENU_COLOR_INDEX += 1
+            if CUR_MENU_COLOR_INDEX >= len(MENU_NEOPIXEL_COLORS):
+                CUR_MENU_COLOR_INDEX = 0
             list_select.move_selection_up()
             time.sleep(0.1)
 
     elif pybadger.button.down:
         if MENU_SHOWING:
+
+            pybadger.pixels.fill(MENU_NEOPIXEL_COLORS[CUR_MENU_COLOR_INDEX])
+            CUR_MENU_COLOR_INDEX += 1
+            if CUR_MENU_COLOR_INDEX >= len(MENU_NEOPIXEL_COLORS):
+                CUR_MENU_COLOR_INDEX = 0
             list_select.move_selection_down()
             time.sleep(0.1)
     else:
@@ -227,6 +244,7 @@ while True:
     if MENU_SHOWING:
         if MENU_START_TIME + MENU_IDLE_TIMEOUT <= time.monotonic():
             print("Menu Idle Timeout")
+            pybadger.pixels.fill(0)
             pybadger.show(previous_group)
             MENU_SHOWING = False
 
