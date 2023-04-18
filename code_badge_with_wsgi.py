@@ -141,7 +141,7 @@ rc_details_lbl.anchored_position = (pybadger.display.width // 2, pybadger.displa
 qr_screen_group = Group()
 qr_screen_group.append(rc_details_lbl)
 
-app_menu_bmp = displayio.OnDiskBitmap("app_menu_grad8.bmp")
+app_menu_bmp = displayio.OnDiskBitmap("app_menu.bmp")
 app_menu_tg = displayio.TileGrid(bitmap=app_menu_bmp, pixel_shader=app_menu_bmp.pixel_shader)
 
 menu_group = displayio.Group()
