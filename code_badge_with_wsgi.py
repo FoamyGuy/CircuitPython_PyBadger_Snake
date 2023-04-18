@@ -45,10 +45,14 @@ display = board.DISPLAY
 
 MENU_APPS = {"Snake": "code_snake_game.py", "IR Cam": "code_ir_cam.py"}
 MENU_ITEMS = ["Snake", "IR Cam", "Back"]
-# MENU_ITEMS = list(MENU_APPS.keys()) + ["Back"]
+
+MENU_NEOPIXEL_COLORS = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff]
+
 MENU_IDLE_TIMEOUT = 10  # secconds
 MENU_SHOWING = False
 MENU_START_TIME = None
+
+CUR_MENU_COLOR_INDEX = 0
 
 LAST_IO_SYNC_TIME = -1
 IO_SYNC_DELAY = 0.5
@@ -57,9 +61,11 @@ SELECT_RELEASED = True
 
 previous_group = None
 
-list_select = ListSelect(scale=2, items=MENU_ITEMS)
-list_select.anchor_point = (0.5, 0.5)
-list_select.anchored_position = (display.width // 2, display.height // 2)
+pybadger.pixels.brightness = 0.1
+
+list_select = ListSelect(scale=2, items=MENU_ITEMS, background_color=None, color=0xDD00DD)
+list_select.anchor_point = (0.0, 0.5)
+list_select.anchored_position = (10, display.height // 2)
 
 pybadger.show_badge(
     name_string="Blinka", hello_scale=2, my_name_is_scale=2, name_scale=3
@@ -119,11 +125,13 @@ print("open this IP in your browser: ", esp.pretty_ip(esp.ip_address))
 # Start the server
 wsgiServer.start()
 
+
 wifi_icon_bmp = displayio.OnDiskBitmap("wifi_14px.bmp")
 wifi_icon_tg = displayio.TileGrid(bitmap=wifi_icon_bmp, pixel_shader=wifi_icon_bmp.pixel_shader)
 wifi_icon_bmp.pixel_shader.make_transparent(0)
 
 display.root_group.append(wifi_icon_tg)
+
 
 rc_details_lbl = Label(terminalio.FONT, text=f"Open Browser To:\nhttp://{esp.pretty_ip(esp.ip_address)}",
                        line_spacing=1.0, color=0xffffff)
@@ -132,6 +140,14 @@ rc_details_lbl.anchored_position = (pybadger.display.width // 2, pybadger.displa
 
 qr_screen_group = Group()
 qr_screen_group.append(rc_details_lbl)
+
+app_menu_bmp = displayio.OnDiskBitmap("app_menu_grad8.bmp")
+app_menu_tg = displayio.TileGrid(bitmap=app_menu_bmp, pixel_shader=app_menu_bmp.pixel_shader)
+
+menu_group = displayio.Group()
+
+menu_group.append(app_menu_tg)
+menu_group.append(list_select)
 
 while True:
 
@@ -186,7 +202,7 @@ while True:
             if not MENU_SHOWING:
                 MENU_START_TIME = time.monotonic()
                 previous_group = pybadger.display.root_group
-                pybadger.show(list_select)
+                pybadger.show(menu_group)
                 MENU_SHOWING = True
             else:
                 MENU_SHOWING = False
@@ -196,19 +212,30 @@ while True:
                     supervisor.reload()
 
                 elif list_select.selected_item == "Back":
+                    pybadger.pixels.fill(0)
                     pybadger.show(previous_group)
                 else:  # Unknown item, just go back
+                    pybadger.pixels.fill(0)
                     pybadger.show(previous_group)
 
         SELECT_RELEASED = False
 
     elif pybadger.button.up:
         if MENU_SHOWING:
+            pybadger.pixels.fill(MENU_NEOPIXEL_COLORS[CUR_MENU_COLOR_INDEX])
+            CUR_MENU_COLOR_INDEX += 1
+            if CUR_MENU_COLOR_INDEX >= len(MENU_NEOPIXEL_COLORS):
+                CUR_MENU_COLOR_INDEX = 0
             list_select.move_selection_up()
             time.sleep(0.1)
 
     elif pybadger.button.down:
         if MENU_SHOWING:
+
+            pybadger.pixels.fill(MENU_NEOPIXEL_COLORS[CUR_MENU_COLOR_INDEX])
+            CUR_MENU_COLOR_INDEX += 1
+            if CUR_MENU_COLOR_INDEX >= len(MENU_NEOPIXEL_COLORS):
+                CUR_MENU_COLOR_INDEX = 0
             list_select.move_selection_down()
             time.sleep(0.1)
     else:
@@ -217,6 +244,7 @@ while True:
     if MENU_SHOWING:
         if MENU_START_TIME + MENU_IDLE_TIMEOUT <= time.monotonic():
             print("Menu Idle Timeout")
+            pybadger.pixels.fill(0)
             pybadger.show(previous_group)
             MENU_SHOWING = False
 
